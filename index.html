@@ -1,12 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Visibility Playbook</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AI Visibility Playbook | Xtrusio Intel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1D1C1A;--bg2:#252422;--bg3:#2E2C29;
+  --text:#E8E6E1;--text2:#A8A49D;--text3:#706C65;
+  --accent:#3B82F6;--accent2:#F97316;--accent3:#10B981;
+  --navy:#1E3A5F;--border:#3A3835;
+  --sidebar-w:280px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+::selection{background:var(--accent);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ─── SIDEBAR ─── */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:24px 0;transition:transform .3s ease}
+.sidebar-brand{padding:0 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-brand h2{font-size:1.1rem;font-weight:800;color:var(--accent);letter-spacing:.5px}
+.sidebar-brand p{font-size:.7rem;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:1.5px}
+.nav-section{padding:8px 24px;font-size:.65rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-top:12px}
+.nav-link{display:block;padding:8px 24px;font-size:.82rem;color:var(--text2);text-decoration:none;transition:all .2s;border-left:3px solid transparent;font-weight:400}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--accent);border-left-color:var(--accent);background:rgba(59,130,246,.08);font-weight:600}
+
+/* ─── MAIN ─── */
+.main{margin-left:var(--sidebar-w);min-height:100vh}
+
+/* ─── HERO ─── */
+.hero{padding:100px 80px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.08) 0%,transparent 70%);pointer-events:none}
+.hero-label{font-size:.75rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;opacity:0;transform:translateY(20px);animation:fadeUp .8s .2s forwards}
+.hero h1{font-size:3.2rem;font-weight:900;line-height:1.1;margin-bottom:16px;opacity:0;transform:translateY(20px);animation:fadeUp .8s .4s forwards}
+.hero h1 span{color:var(--accent2)}
+.hero .subtitle{font-size:1.15rem;color:var(--text2);max-width:640px;line-height:1.7;opacity:0;transform:translateY(20px);animation:fadeUp .8s .6s forwards}
+.hero .meta{margin-top:32px;display:flex;gap:24px;opacity:0;animation:fadeUp .8s .8s forwards}
+.hero .meta span{font-size:.8rem;color:var(--text3);padding:6px 14px;border:1px solid var(--border);border-radius:20px}
+
+/* ─── SECTIONS ─── */
+section{padding:60px 80px;border-top:1px solid var(--border)}
+section h2{font-size:2rem;font-weight:800;margin-bottom:8px;color:var(--text)}
+section h2 .num{color:var(--accent);font-weight:300;margin-right:8px}
+section h3{font-size:1.3rem;font-weight:700;margin:32px 0 12px;color:var(--text)}
+section h4{font-size:1.05rem;font-weight:600;margin:24px 0 8px;color:var(--accent)}
+.section-label{font-size:.7rem;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+p{color:var(--text2);margin-bottom:16px;max-width:800px}
+sup{color:var(--accent);font-weight:600;font-size:.7em}
+
+/* ─── STAT CARDS ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:32px 0}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.22,1,.36,1)}
+.stat-card.visible{opacity:1;transform:translateY(0)}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 30px rgba(59,130,246,.1)}
+.stat-num{font-size:2.2rem;font-weight:900;color:var(--accent);display:block}
+.stat-num.orange{color:var(--accent2)}
+.stat-num.green{color:var(--accent3)}
+.stat-num.red{color:#EF4444}
+.stat-label{font-size:.78rem;color:var(--text3);margin-top:8px;line-height:1.4}
+.stat-src{font-size:.6rem;color:var(--text3);opacity:.6;margin-top:6px}
+
+/* ─── ANIMATED BAR CHART ─── */
+.bar-chart{margin:32px 0}
+.bar-row{display:flex;align-items:center;margin-bottom:12px;gap:12px}
+.bar-label{min-width:180px;font-size:.82rem;color:var(--text2);text-align:right}
+.bar-track{flex:1;height:28px;background:var(--bg);border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:6px;width:0;transition:width 1.5s cubic-bezier(.22,1,.36,1);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-size:.72rem;font-weight:700;color:#fff}
+.bar-fill.blue{background:linear-gradient(90deg,#1E40AF,#3B82F6)}
+.bar-fill.orange{background:linear-gradient(90deg,#C2410C,#F97316)}
+.bar-fill.green{background:linear-gradient(90deg,#065F46,#10B981)}
+.bar-fill.red{background:linear-gradient(90deg,#991B1B,#EF4444)}
+
+/* ─── DEPENDENCY MAP ─── */
+.dep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:32px 0}
+.dep-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;opacity:0;transform:scale(.95);transition:all .6s}
+.dep-card.visible{opacity:1;transform:scale(1)}
+.dep-card:hover{border-color:var(--accent)}
+.dep-card .engine{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:4px}
+.dep-card .arrow{color:var(--accent);font-size:1.2rem;margin:8px 0}
+.dep-card .backend{font-size:.85rem;font-weight:600;color:var(--accent2)}
+.dep-card .detail{font-size:.78rem;color:var(--text3);margin-top:8px;line-height:1.5}
+
+/* ─── TABLE ─── */
+.data-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.85rem}
+.data-table th{background:var(--bg3);color:var(--text);font-weight:700;padding:12px 16px;text-align:left;border-bottom:2px solid var(--accent);font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.data-table td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text2)}
+.data-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ─── CALLOUT ─── */
+.callout{background:var(--bg2);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:24px 28px;margin:24px 0;max-width:800px}
+.callout.orange{border-left-color:var(--accent2)}
+.callout h4{color:var(--accent);font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.callout.orange h4{color:var(--accent2)}
+.callout p{color:var(--text2);margin:0;font-size:.9rem}
+
+/* ─── DONUT CHART ─── */
+.donut-container{display:flex;align-items:center;gap:40px;margin:32px 0;flex-wrap:wrap}
+.donut-svg{width:180px;height:180px}
+.donut-ring{fill:none;stroke:var(--bg3);stroke-width:20}
+.donut-segment{fill:none;stroke-width:20;stroke-linecap:round;stroke-dasharray:0 100;transition:stroke-dasharray 1.5s cubic-bezier(.22,1,.36,1)}
+.donut-text{fill:var(--text);font-family:'Inter';font-weight:800;font-size:1.8rem;text-anchor:middle;dominant-baseline:central}
+.donut-legend{display:flex;flex-direction:column;gap:8px}
+.donut-legend-item{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text2)}
+.donut-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* ─── PILLAR CARDS ─── */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:32px 0}
+.pillar{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;opacity:0;transform:translateY(20px);transition:all .5s}
+.pillar.visible{opacity:1;transform:translateY(0)}
+.pillar:hover{border-color:var(--accent);transform:translateY(-2px)}
+.pillar-num{font-size:2rem;font-weight:900;color:var(--accent);opacity:.3}
+.pillar-title{font-size:1rem;font-weight:700;color:var(--text);margin:8px 0 4px}
+.pillar-impact{font-size:.72rem;font-weight:600;color:var(--accent3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pillar-desc{font-size:.82rem;color:var(--text3);line-height:1.6}
+
+/* ─── MODULES FLOW ─── */
+.modules-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:32px 0}
+.module-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;position:relative;opacity:0;transform:translateY(20px);transition:all .5s}
+.module-card.visible{opacity:1;transform:translateY(0)}
+.module-card:hover{border-color:var(--accent2)}
+.module-num{font-size:.7rem;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:1px}
+.module-title{font-size:.95rem;font-weight:700;color:var(--text);margin:8px 0}
+.module-desc{font-size:.78rem;color:var(--text3);line-height:1.5}
+
+/* ─── SOURCES ─── */
+.source-list{list-style:none;padding:0}
+.source-list li{font-size:.8rem;color:var(--text3);padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.5}
+.source-list li strong{color:var(--accent);font-weight:600}
+.source-list li a{color:var(--accent);text-decoration:none;word-break:break-all}
+.source-list li a:hover{text-decoration:underline}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+@keyframes countUp{from{opacity:0}to{opacity:1}}
+.fade-in{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.22,1,.36,1)}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ─── MOBILE ─── */
+.menu-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:1.2rem;cursor:pointer}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .menu-toggle{display:block}
+  section,.hero{padding:40px 24px}
+  .hero h1{font-size:2rem}
+}
+
+/* ─── CTA ─── */
+.cta-section{text-align:center;padding:80px;background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(249,115,22,.08))}
+.cta-section h2{font-size:2rem;max-width:none}
+.cta-btn{display:inline-block;margin-top:24px;padding:14px 40px;background:var(--accent);color:#fff;font-weight:700;font-size:1rem;border-radius:8px;text-decoration:none;transition:all .3s}
+.cta-btn:hover{background:#2563EB;transform:translateY(-2px);box-shadow:0 8px 30px rgba(59,130,246,.3)}
+</style>
 </head>
 <body>
-  <h1>AI Visibility Playbook</h1>
-  <p>Coming soon.</p>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <h2>XTRUSIO INTEL</h2>
+    <p>AI Visibility Playbook</p>
+  </div>
+  <div class="nav-section">Overview</div>
+  <a href="#hero" class="nav-link active">Introduction</a>
+  <a href="#exec-summary" class="nav-link">Executive Summary</a>
+  <div class="nav-section">Part 1 &mdash; The Shift</div>
+  <a href="#ch1" class="nav-link">Ch 1: Death of Traditional Search</a>
+  <a href="#ch2" class="nav-link">Ch 2: How AI Engines Work</a>
+  <a href="#ch3" class="nav-link">Ch 3: Paid Ads to Earned Authority</a>
+  <div class="nav-section">Part 2 &mdash; The Framework</div>
+  <a href="#ch4" class="nav-link">Ch 4: Mapping Buyer Questions</a>
+  <a href="#ch5" class="nav-link">Ch 5: 7 Pillars of AI Visibility</a>
+  <a href="#ch6" class="nav-link">Ch 6: Platform-Specific Strategies</a>
+  <a href="#ch7" class="nav-link">Ch 7: The Perception Gap</a>
+  <div class="nav-section">Part 3 &mdash; The System</div>
+  <a href="#ch8" class="nav-link">Ch 8: Why One-Time Fails</a>
+  <a href="#ch9" class="nav-link">Ch 9: Xtrusio Intel Modules</a>
+  <a href="#ch10" class="nav-link">Ch 10: The Cost of Inaction</a>
+  <div class="nav-section">Reference</div>
+  <a href="#sources" class="nav-link">Sources & References</a>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero" id="hero">
+    <div class="hero-label">Strategic Intelligence Report &mdash; April 2026</div>
+    <h1>The AI Visibility<br><span>Playbook</span></h1>
+    <p class="subtitle">How to rank on ChatGPT, Gemini, Claude & Perplexity for every question your buyer asks. A data-driven guide for CEOs and CMOs navigating the shift from paid search to earned AI authority.</p>
+    <div class="meta">
+      <span>10 Chapters</span>
+      <span>16 Verified Sources</span>
+      <span>4 AI Engines Covered</span>
+    </div>
+  </div>
+
+  <!-- EXEC SUMMARY -->
+  <section id="exec-summary">
+    <div class="section-label">Executive Summary</div>
+    <h2>The Numbers That Define the Shift</h2>
+    <p>The rules of brand visibility have fundamentally changed. AI engines do not serve advertisements. They compile answers from authority signals: PR coverage, expert citations, review platforms, and structured content. Visibility cannot be purchased. It must be earned.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card"><span class="stat-num" data-target="2.5" data-suffix="B">0</span><div class="stat-label">Daily ChatGPT queries</div><div class="stat-src">[1] DemandSage / OpenAI</div></div>
+      <div class="stat-card"><span class="stat-num orange" data-target="1.5" data-suffix="B">0</span><div class="stat-label">Monthly Perplexity queries</div><div class="stat-src">[2] Index.dev</div></div>
+      <div class="stat-card"><span class="stat-num" data-target="48" data-suffix="%">0</span><div class="stat-label">Google searches with AI Overviews</div><div class="stat-src">[3] BrightEdge / SEJ</div></div>
+      <div class="stat-card"><span class="stat-num red" data-target="-58" data-suffix="%">0</span><div class="stat-label">CTR drop when AI Overviews present</div><div class="stat-src">[4] Ahrefs (Dec 2025)</div></div>
+      <div class="stat-card"><span class="stat-num red" data-target="-25" data-suffix="%">0</span><div class="stat-label">Gartner search traffic forecast</div><div class="stat-src">[5] Gartner (Feb 2024)</div></div>
+      <div class="stat-card"><span class="stat-num orange" data-target="3" data-suffix="%">0</span><div class="stat-label">B2B brands cited in relevant AI answers</div><div class="stat-src">[6] Walker Sands</div></div>
+      <div class="stat-card"><span class="stat-num green" data-target="40" data-suffix="%">0</span><div class="stat-label">Visibility lift from GEO optimization</div><div class="stat-src">[7] Princeton / IIT Delhi</div></div>
+    </div>
+  </section>
+
+  <!-- CH1 -->
+  <section id="ch1">
+    <div class="section-label">Part One &mdash; The Shift</div>
+    <h2><span class="num">01</span> The Decline of Traditional Search Dominance</h2>
+    <p>For over twenty years, digital marketing operated on a simple principle: visibility at the moment of buyer intent could be purchased through search engine advertising. That $600 billion ecosystem is experiencing structural disruption.</p>
+
+    <h3>AI Search Growth vs. Traditional CTR Decline</h3>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label">ChatGPT daily queries</span><div class="bar-track"><div class="bar-fill blue" data-width="95">2.5B</div></div></div>
+      <div class="bar-row"><span class="bar-label">Perplexity monthly queries</span><div class="bar-track"><div class="bar-fill orange" data-width="72">1.2-1.5B</div></div></div>
+      <div class="bar-row"><span class="bar-label">AI Overview penetration</span><div class="bar-track"><div class="bar-fill blue" data-width="48">48%</div></div></div>
+      <div class="bar-row"><span class="bar-label">CTR decline (AI present)</span><div class="bar-track"><div class="bar-fill red" data-width="58">-58%</div></div></div>
+      <div class="bar-row"><span class="bar-label">Gartner traffic decline</span><div class="bar-track"><div class="bar-fill red" data-width="25">-25%</div></div></div>
+    </div>
+
+    <div class="callout orange">
+      <h4>The Paradigm Shift</h4>
+      <p>Previously, brands purchased visibility through Google and Bing search ads. Today, AI engines do not serve ads in their answers. When ChatGPT recommends contract management platforms, those recommendations are <strong>earned through authority</strong>, not purchased through advertising spend. Marketing investment must flow from paid search toward <strong>PR (the authority ring)</strong> and <strong>perception building</strong>.</p>
+    </div>
+  </section>
+
+  <!-- CH2 -->
+  <section id="ch2">
+    <h2><span class="num">02</span> How Each AI Engine Actually Works</h2>
+    <p>Each AI engine retrieves information through different search backends and weights different authority signals. Understanding these dependencies is the foundation of any AI visibility strategy.</p>
+
+    <h3>The AI Engine Dependency Map</h3>
+    <div class="dep-grid">
+      <div class="dep-card">
+        <div class="engine">ChatGPT</div>
+        <div class="arrow">&darr;</div>
+        <div class="backend">Bing Search API</div>
+        <div class="detail">87%+ citation overlap with Bing results<sup>[8]</sup>. Fine-tuned GPT-4o decomposes queries into targeted Bing sub-queries. 2.5B daily queries.<sup>[1]</sup></div>
+      </div>
+      <div class="dep-card">
+        <div class="engine">Gemini</div>
+        <div class="arrow">&darr;</div>
+        <div class="backend">Google Search Index</div>
+        <div class="detail">Native access to Knowledge Graph, Shopping Graph, RankBrain, BERT, PageRank, and Helpful Content systems.<sup>[9]</sup> Powers 48% of all Google searches.<sup>[3]</sup></div>
+      </div>
+      <div class="dep-card">
+        <div class="engine">Claude</div>
+        <div class="arrow">&darr;</div>
+        <div class="backend">Brave Search</div>
+        <div class="detail">86.7% overlap with Brave top organic results (p&lt;0.0001).<sup>[10]</sup> Dynamic filtering strips HTML boilerplate before reasoning.<sup>[13]</sup></div>
+      </div>
+      <div class="dep-card">
+        <div class="engine">Perplexity</div>
+        <div class="arrow">&darr;</div>
+        <div class="backend">Proprietary Real-Time Crawl</div>
+        <div class="detail">200B+ URL index. Tens of thousands of updates/second. Synthesizes 10-50 sources per answer.<sup>[2]</sup> Freshness is dominant signal.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <h4>Strategic Implication</h4>
+      <p>Brand visibility now requires optimization across <strong>four distinct search backends</strong>. A Google-only strategy leaves you invisible to ChatGPT (Bing), Claude (Brave), and Perplexity (real-time crawl) &mdash; collectively handling billions of queries daily.</p>
+    </div>
+  </section>
+
+  <!-- CH3 -->
+  <section id="ch3">
+    <h2><span class="num">03</span> From Paid Ads to Earned Authority</h2>
+    <p>The previous model was transactional: budgets purchased visibility. The current model is reputational: AI engines surface brands based on perceived authority, not advertising spend.</p>
+
+    <h3>The Authority Ring</h3>
+    <p>AI engines cite brands based on how frequently and authoritatively they appear across trusted sources. Third-party earned media produces a <strong>239% median lift</strong> in AI search visibility.<sup>[14]</sup></p>
+
+    <h3>Investment Model Comparison</h3>
+    <table class="data-table">
+      <thead><tr><th>Dimension</th><th>Previous: Search Ads</th><th>Current: Authority + Perception</th></tr></thead>
+      <tbody>
+        <tr><td>Mechanism</td><td>Pay-per-click placement</td><td>Earned citations through authority signals</td></tr>
+        <tr><td>Time to Impact</td><td>Immediate (hours)</td><td>Medium-term (weeks to months)</td></tr>
+        <tr><td>Sustainability</td><td>Ceases when budget ceases</td><td>Compounds over time</td></tr>
+        <tr><td>AI Engine Coverage</td><td>Google/Bing only</td><td>All AI engines simultaneously</td></tr>
+        <tr><td>Competitive Moat</td><td>None (competitors outbid)</td><td>Strong (authority takes time to replicate)</td></tr>
+        <tr><td>Cost Trajectory</td><td>Increasing (CPC +10-15%/yr)</td><td>Decreasing (earned assets appreciate)</td></tr>
+        <tr><td>Buyer Trust</td><td>Low (buyers skip ads)</td><td>High (AI = implicit endorsement)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- CH4 -->
+  <section id="ch4">
+    <div class="section-label">Part Two &mdash; The Framework</div>
+    <h2><span class="num">04</span> Mapping the Buyer&rsquo;s Question Universe</h2>
+    <p>The overlap between traditional Google keywords and AI queries has dropped from 70% to below 20%.<sup>[15]</sup> Google keyword optimization alone misses 80%+ of what buyers ask AI engines.</p>
+
+    <h3>Question Universe by Buyer Journey</h3>
+    <table class="data-table">
+      <thead><tr><th>Stage</th><th>Question Type</th><th>Example Query</th></tr></thead>
+      <tbody>
+        <tr><td>Awareness</td><td>Problem recognition</td><td>&ldquo;Why is our pipeline velocity declining?&rdquo;</td></tr>
+        <tr><td>Consideration</td><td>Solution exploration</td><td>&ldquo;What platforms improve AI search visibility?&rdquo;</td></tr>
+        <tr><td>Decision</td><td>Vendor evaluation</td><td>&ldquo;Compare Xtrusio vs. manual monitoring&rdquo;</td></tr>
+        <tr><td>Validation</td><td>Risk assessment</td><td>&ldquo;Results from AI perception management?&rdquo;</td></tr>
+      </tbody>
+    </table>
+
+    <h3>AI Engine Preference by Persona</h3>
+    <div class="donut-container">
+      <svg class="donut-svg" viewBox="0 0 42 42">
+        <circle class="donut-ring" cx="21" cy="21" r="15.915"/>
+        <circle class="donut-segment" cx="21" cy="21" r="15.915" stroke="#3B82F6" stroke-dasharray="0 100" data-value="35" style="transform:rotate(-90deg);transform-origin:center"/>
+        <circle class="donut-segment" cx="21" cy="21" r="15.915" stroke="#F97316" stroke-dasharray="0 100" data-value="30" data-offset="35" style="transform:rotate(-90deg);transform-origin:center"/>
+        <circle class="donut-segment" cx="21" cy="21" r="15.915" stroke="#10B981" stroke-dasharray="0 100" data-value="20" data-offset="65" style="transform:rotate(-90deg);transform-origin:center"/>
+        <circle class="donut-segment" cx="21" cy="21" r="15.915" stroke="#8B5CF6" stroke-dasharray="0 100" data-value="15" data-offset="80" style="transform:rotate(-90deg);transform-origin:center"/>
+        <text class="donut-text" x="21" y="21">4</text>
+      </svg>
+      <div class="donut-legend">
+        <div class="donut-legend-item"><div class="donut-legend-dot" style="background:#3B82F6"></div>ChatGPT &mdash; CEOs, CMOs, Finance (35%)</div>
+        <div class="donut-legend-item"><div class="donut-legend-dot" style="background:#F97316"></div>Gemini &mdash; CMOs, Marketing Ops (30%)</div>
+        <div class="donut-legend-item"><div class="donut-legend-dot" style="background:#10B981"></div>Claude &mdash; Technical, Digital/SEO leads (20%)</div>
+        <div class="donut-legend-item"><div class="donut-legend-dot" style="background:#8B5CF6"></div>Perplexity &mdash; Researchers, Analysts (15%)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CH5 -->
+  <section id="ch5">
+    <h2><span class="num">05</span> The 7 Pillars of AI Search Visibility</h2>
+    <p>Analysis of AI engine source selection reveals seven primary factors, ranked by measured correlation with AI citation.</p>
+
+    <div class="pillars">
+      <div class="pillar"><div class="pillar-num">01</div><div class="pillar-title">E-E-A-T Content Architecture</div><div class="pillar-impact">Highest Impact</div><div class="pillar-desc">Experience, Expertise, Authoritativeness, Trust. Named, credentialed authors; original research; authoritative citations.<sup>[9][12]</sup></div></div>
+      <div class="pillar"><div class="pillar-num">02</div><div class="pillar-title">Multi-Modal Content</div><div class="pillar-impact">r=0.92 Correlation</div><div class="pillar-desc">Text + images + data viz + video. 156% higher AI selection rate. 78% of AI-cited sources include multi-modal elements.<sup>[11]</sup></div></div>
+      <div class="pillar"><div class="pillar-num">03</div><div class="pillar-title">Authoritative Citations</div><div class="pillar-impact">239% Median Lift</div><div class="pillar-desc">Earned media via PR, analyst coverage, and expert bylines. Third-party distribution drives massive AI visibility gains.<sup>[14]</sup></div></div>
+      <div class="pillar"><div class="pillar-num">04</div><div class="pillar-title">Content Freshness</div><div class="pillar-impact">Cross-Model Factor</div><div class="pillar-desc">Confirmed ranking factor across 7 major AI models. Quarterly updates minimum. Visible timestamps required.<sup>[16]</sup></div></div>
+      <div class="pillar"><div class="pillar-num">05</div><div class="pillar-title">Structured Data</div><div class="pillar-impact">AI Parsability</div><div class="pillar-desc">Schema.org markup: Organization, Person, Article, FAQ, HowTo, Product, Review. Critical for Gemini/Knowledge Graph.<sup>[9]</sup></div></div>
+      <div class="pillar"><div class="pillar-num">06</div><div class="pillar-title">Cross-Platform Distribution</div><div class="pillar-impact">4 Backend Coverage</div><div class="pillar-desc">Presence across Bing, Google, Brave, and real-time web. Google-only strategy creates 50%+ AI query blind spot.</div></div>
+      <div class="pillar"><div class="pillar-num">07</div><div class="pillar-title">Review Signal Management</div><div class="pillar-impact">Comparison Queries</div><div class="pillar-desc">Active G2, Capterra, Gartner Peer Insights presence. Review volume, recency, and response rate all contribute.<sup>[6]</sup></div></div>
+    </div>
+  </section>
+
+  <!-- CH6 -->
+  <section id="ch6">
+    <h2><span class="num">06</span> Platform-Specific Optimization</h2>
+
+    <h4>Bing &rarr; ChatGPT Visibility</h4>
+    <p>Register with Bing Webmaster Tools. Submit sitemaps. Bing weights social signals higher than Google. Structure precise, complete answers. Complete LinkedIn/Microsoft profile.<sup>[8]</sup></p>
+
+    <h4>Google &rarr; Gemini / AI Overviews</h4>
+    <p>Complete Google Business Profile. Comprehensive Schema.org markup. Topical authority clusters. Google News inclusion. Core Web Vitals optimization.<sup>[9]</sup></p>
+
+    <h4>Brave &rarr; Claude Visibility</h4>
+    <p>Submit to Brave Search webmaster tools. Minimize trackers. Clean HTML structure (Claude strips boilerplate). Content quality over quantity.<sup>[10][13]</sup> Virtually uncontested &mdash; blue ocean opportunity.</p>
+
+    <h4>Real-Time Web &rarr; Perplexity</h4>
+    <p>Weekly content updates with visible timestamps. Answer-first content architecture. Active Reddit and forum presence. Data-driven, parsable content structure.<sup>[2]</sup></p>
+  </section>
+
+  <!-- CH7 -->
+  <section id="ch7">
+    <h2><span class="num">07</span> The Perception Gap</h2>
+    <p>AI search creates a definitive perception of every brand. Most organizations have no visibility into what that perception is.</p>
+
+    <h3>The Five-Question Audit</h3>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Ask Every AI Engine</th><th>What to Assess</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>&ldquo;What does [Company] do?&rdquo;</td><td>Accuracy and currency of description</td></tr>
+        <tr><td>2</td><td>&ldquo;What are alternatives to [Company]?&rdquo;</td><td>Whether you appear when competitors are named</td></tr>
+        <tr><td>3</td><td>&ldquo;Best [Category] for [Use Case]?&rdquo;</td><td>Inclusion in recommendation set</td></tr>
+        <tr><td>4</td><td>&ldquo;Customer reviews of [Company]?&rdquo;</td><td>Sentiment accuracy and recency</td></tr>
+        <tr><td>5</td><td>&ldquo;Compare [Company] to [Competitor]&rdquo;</td><td>Fairness and factual correctness</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout orange">
+      <h4>The SEO ≠ AI Visibility Gap</h4>
+      <p>A company can dominate Google organic rankings and be simultaneously invisible in AI answers. Google ranking depends on backlinks and technical SEO. AI citation depends on authority signals, freshness, cross-platform presence, and review sentiment. These are different systems with different inputs.</p>
+    </div>
+  </section>
+
+  <!-- CH8 -->
+  <section id="ch8">
+    <div class="section-label">Part Three &mdash; The System</div>
+    <h2><span class="num">08</span> Why One-Time Optimization Fails</h2>
+    <p>Walker Sands&rsquo; 2026 Benchmark found the typical enterprise B2B brand is cited in just 3% of AI answers it is relevant for, despite ranking broadly across thousands of traditional keywords.<sup>[6]</sup></p>
+    <p>AI visibility decays continuously as models retrain, content is recrawled, and competitors invest. Without systematic monitoring, the gap compounds with each cycle.</p>
+
+    <h3>Visibility Decay: Traditional SEO vs. AI Citations</h3>
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label">Traditional SEO stability</span><div class="bar-track"><div class="bar-fill green" data-width="75">Months</div></div></div>
+      <div class="bar-row"><span class="bar-label">AI citation half-life</span><div class="bar-track"><div class="bar-fill red" data-width="20">Weeks</div></div></div>
+    </div>
+  </section>
+
+  <!-- CH9 -->
+  <section id="ch9">
+    <h2><span class="num">09</span> Xtrusio Intel: The Continuous Intelligence Loop</h2>
+    <p>Six integrated modules create a perpetual monitoring, analysis, and remediation system.</p>
+
+    <div class="modules-flow">
+      <div class="module-card"><div class="module-num">Module 1</div><div class="module-title">AI Search Audit</div><div class="module-desc">Queries all AI engines with your buyer&rsquo;s Question Universe. Records brand presence, position, and competitor mentions.</div></div>
+      <div class="module-card"><div class="module-num">Module 2</div><div class="module-title">Perception Gap Analysis</div><div class="module-desc">Compares AI perception against reality. Identifies root causes: outdated content, missing reviews, competitor dominance.</div></div>
+      <div class="module-card"><div class="module-num">Module 3</div><div class="module-title">Question Universe</div><div class="module-desc">Continuously updated taxonomy of every buyer query by persona, journey stage, and trigger event.</div></div>
+      <div class="module-card"><div class="module-num">Module 4</div><div class="module-title">Competitive Benchmarking</div><div class="module-desc">Tracks competitor visibility across the same question set. Alerts when competitive ground is lost.</div></div>
+      <div class="module-card"><div class="module-num">Module 5</div><div class="module-title">Signal Monitoring</div><div class="module-desc">Real-time tracking of press mentions, review changes, competitor content, and AI engine behavior shifts.</div></div>
+      <div class="module-card"><div class="module-num">Module 6</div><div class="module-title">Remediation Playbook</div><div class="module-desc">Converts intelligence into prioritized action with estimated impact scores for each recommendation.</div></div>
+    </div>
+  </section>
+
+  <!-- CH10 -->
+  <section id="ch10">
+    <h2><span class="num">10</span> The Cost of Inaction</h2>
+    <p>AI models learn from each other. When ChatGPT recommends a competitor, that recommendation appears in indexed content, reinforcing the competitor&rsquo;s position across Gemini, Claude, and Perplexity. Early movers gain a compounding advantage.</p>
+
+    <div class="callout orange">
+      <h4>The Bottom Line</h4>
+      <p>The overlap between top Google results and AI-cited sources has dropped from 70% to below 20%.<sup>[15]</sup> Google rankings no longer guarantee AI visibility. The brands that will lead the next decade are those investing now in authority signals, perception infrastructure, and continuous AI monitoring. This is not a marketing experiment. It is a strategic imperative.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to Audit Your AI Visibility?</h2>
+    <p style="max-width:600px;margin:12px auto">Xtrusio Intel provides the complete perception intelligence platform described in this guide.</p>
+    <a href="https://xtrusio.com" class="cta-btn" target="_blank">Get Your Free AI Visibility Audit &rarr;</a>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="sources">
+    <div class="section-label">Reference</div>
+    <h2>Sources & References</h2>
+    <p>All statistics are sourced from publicly available research, official disclosures, and peer-reviewed studies.</p>
+    <ol class="source-list">
+      <li><strong>[1]</strong> DemandSage, &ldquo;ChatGPT Statistics (2026),&rdquo; citing OpenAI CEO Sam Altman. <a href="https://www.demandsage.com/chatgpt-statistics/" target="_blank">demandsage.com</a></li>
+      <li><strong>[2]</strong> Index.dev, &ldquo;Perplexity AI Features 2026: Stats &amp; Capabilities.&rdquo; <a href="https://www.index.dev/blog/perplexity-statistics" target="_blank">index.dev</a></li>
+      <li><strong>[3]</strong> Search Engine Journal / BrightEdge, &ldquo;AI Overviews Appear In 47% Of Search Results&rdquo; (tracking shows 31% to 48%, Feb 2025&ndash;Feb 2026). <a href="https://www.searchenginejournal.com/study-google-ai-overviews-appear-in-47-of-search-results/535096/" target="_blank">searchenginejournal.com</a></li>
+      <li><strong>[4]</strong> Ahrefs, &ldquo;AI Overviews Reduce Clicks by 58%,&rdquo; updated December 2025 study (300,000+ keywords). <a href="https://ahrefs.com/blog/ai-overviews-reduce-clicks-update/" target="_blank">ahrefs.com</a></li>
+      <li><strong>[5]</strong> Gartner, Inc., &ldquo;Gartner Predicts Search Engine Volume Will Drop 25% by 2026,&rdquo; February 19, 2024 press release. <a href="https://www.gartner.com/en/newsroom/press-releases/2024-02-19-gartner-predicts-search-engine-volume-will-drop-25-percent-by-2026-due-to-ai-chatbots-and-other-virtual-agents" target="_blank">gartner.com</a></li>
+      <li><strong>[6]</strong> Walker Sands, &ldquo;B2B AI Search Visibility Benchmark,&rdquo; April 2026. Enterprise B2B brands cited in 3% of relevant AI answers. <a href="https://www.globenewswire.com/news-release/2026/04/01/3266771/21847/en/Walker-Sands-Launches-B2B-AI-Search-Visibility-Benchmark.html" target="_blank">globenewswire.com</a></li>
+      <li><strong>[7]</strong> Aggarwal et al., &ldquo;GEO: Generative Engine Optimization,&rdquo; Princeton / IIT Delhi / Georgia Tech. ACM SIGKDD 2024. Up to 40% AI visibility increase. <a href="https://arxiv.org/abs/2311.09735" target="_blank">arxiv.org</a></li>
+      <li><strong>[8]</strong> Seer Interactive, &ldquo;87% of SearchGPT Citations Match Bing&rsquo;s Top Results.&rdquo; <a href="https://www.seerinteractive.com/insights/87-percent-of-searchgpt-citations-match-bings-top-results" target="_blank">seerinteractive.com</a></li>
+      <li><strong>[9]</strong> Wellows, &ldquo;Google AI Overviews Ranking Factors: 2026 Guide.&rdquo; <a href="https://wellows.com/blog/google-ai-overviews-ranking-factors/" target="_blank">wellows.com</a></li>
+      <li><strong>[10]</strong> Profound, &ldquo;Claude Web Search Explained,&rdquo; 86.7% overlap with Brave (p&lt;0.0001). <a href="https://www.tryprofound.com/blog/what-is-claude-web-search-explained" target="_blank">tryprofound.com</a></li>
+      <li><strong>[11]</strong> AI Overview Ranking Factors Study 2025 / AI Mode Boost, 15,847 results across 63 industries. r=0.92 multi-modal correlation. <a href="https://aimodeboost.com/resources/research/ai-overview-ranking-factors-2025/" target="_blank">aimodeboost.com</a></li>
+      <li><strong>[12]</strong> Search Engine Journal, &ldquo;The Role Of E-E-A-T In AI Narratives.&rdquo; <a href="https://www.searchenginejournal.com/role-of-eeat-in-ai-narratives-building-brand-authority/541927/" target="_blank">searchenginejournal.com</a></li>
+      <li><strong>[13]</strong> Anthropic, &ldquo;Introducing web search on the Anthropic API&rdquo; and Claude API documentation. <a href="https://claude.com/blog/web-search-api" target="_blank">claude.com</a></li>
+      <li><strong>[14]</strong> Authority Tech / Stacker &amp; Scrunch, &ldquo;Earned Media Drives AI Citations,&rdquo; 2025&ndash;2026. 239% median AI visibility lift. <a href="https://authoritytech.io/blog/machine-relations-evidence-earned-media-ai-citations" target="_blank">authoritytech.io</a></li>
+      <li><strong>[15]</strong> Search Engine Land, &ldquo;Mastering GEO in 2026.&rdquo; Google/AI source overlap dropped from 70% to &lt;20%. <a href="https://searchengineland.com/mastering-generative-engine-optimization-in-2026-full-guide-469142" target="_blank">searchengineland.com</a></li>
+      <li><strong>[16]</strong> Position Digital, &ldquo;100+ AI SEO Statistics for 2026.&rdquo; Content freshness confirmed across 7 AI models. <a href="https://www.position.digital/blog/ai-seo-statistics/" target="_blank">position.digital</a></li>
+    </ol>
+  </section>
+
+  <footer style="text-align:center;padding:40px;border-top:1px solid var(--border);color:var(--text3);font-size:.75rem">
+    &copy; 2026 Xtrusio Intel. All rights reserved. Confidential.
+  </footer>
+</div>
+
+<script>
+// ─── INTERSECTION OBSERVER FOR ANIMATIONS ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Animate bars
+      if (entry.target.closest('.bar-chart')) {
+        const fill = entry.target.querySelector('.bar-fill');
+        if (fill) fill.style.width = fill.dataset.width + '%';
+      }
+      // Animate stat numbers
+      if (entry.target.classList.contains('stat-card')) {
+        const numEl = entry.target.querySelector('.stat-num');
+        if (numEl && numEl.dataset.target) animateNumber(numEl);
+      }
+      // Animate donut
+      entry.target.querySelectorAll('.donut-segment').forEach(seg => {
+        const val = parseFloat(seg.dataset.value);
+        const offset = parseFloat(seg.dataset.offset || 0);
+        seg.style.strokeDasharray = val + ' ' + (100 - val);
+        seg.style.strokeDashoffset = -offset;
+      });
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.stat-card, .dep-card, .pillar, .module-card, .fade-in, .bar-row, .donut-container').forEach(el => observer.observe(el));
+
+// ─── ANIMATE NUMBERS ───
+function animateNumber(el) {
+  const target = parseFloat(el.dataset.target);
+  const suffix = el.dataset.suffix || '';
+  const duration = 1500;
+  const start = performance.now();
+  const isNeg = target < 0;
+  const absTarget = Math.abs(target);
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = eased * absTarget;
+    const display = absTarget >= 10 ? Math.round(current) : current.toFixed(1);
+    el.textContent = (isNeg ? '-' : '') + display + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// ─── ANIMATE BARS ON SCROLL ───
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const fills = entry.target.querySelectorAll('.bar-fill');
+      fills.forEach((fill, i) => {
+        setTimeout(() => { fill.style.width = fill.dataset.width + '%'; }, i * 150);
+      });
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('.bar-chart').forEach(el => barObserver.observe(el));
+
+// ─── ACTIVE NAV TRACKING ───
+const sections = document.querySelectorAll('section, .hero');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const id = entry.target.id;
+      const activeLink = document.querySelector(`.nav-link[href="#${id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-100px 0px -60% 0px' });
+
+sections.forEach(s => { if (s.id) navObserver.observe(s); });
+
+// ─── MOBILE NAV CLOSE ON CLICK ───
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar').classList.remove('open');
+  });
+});
+</script>
 </body>
 </html>
